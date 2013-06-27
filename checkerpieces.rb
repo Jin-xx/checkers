@@ -1,6 +1,6 @@
 class CheckerPiece
 
-  attr_accessor :position, :king, :color
+  attr_accessor :position, :king, :color, :board
 
 	def initialize(board, position, color)
     @position = position
@@ -47,19 +47,19 @@ class CheckerPiece
       k_jump.each_with_index do |jump, index|
         temp_move = [jump[0] + @position[0], jump[1] + @position[1]]
         kill_piece = [k_take[index][0] + @position[0], k_take[index][1] + @position[1]]
-        move << temp_move if in_board?(temp_move) && empty?(temp_move) && !piece_at_location(kill_piece).nil? && piece_at_location(kill_piece).color == :black
+        move << temp_move if in_board?(temp_move) && empty?(temp_move) && !piece_at_location(kill_piece, opposite_color).nil?
       end
     elsif @color == :white && !self.nil? && !@king
       w_jump.each_with_index do |jump, index|
         temp_move = [jump[0] + @position[0], jump[1] + @position[1]]
         kill_piece = [w_take[index][0] + @position[0], w_take[index][1] + @position[1]]
-        move << temp_move if in_board?(temp_move) && empty?(temp_move) && !piece_at_location(kill_piece).nil? && piece_at_location(kill_piece).color == :black
+        move << temp_move if in_board?(temp_move) && empty?(temp_move) && !piece_at_location(kill_piece, opposite_color).nil?
       end
     elsif @color == :black && !self.nil? && !@king
       b_jump.each_with_index do |jump, index|
         temp_move = [jump[0] + @position[0], jump[1] + @position[1]]
         kill_piece = [b_take[index][0] + @position[0], b_take[index][1] + @position[1]]
-        move << temp_move if in_board?(temp_move) && empty?(temp_move) && !piece_at_location(kill_piece).nil? && piece_at_location(kill_piece).color == :white
+        move << temp_move if in_board?(temp_move) && empty?(temp_move) && !piece_at_location(kill_piece, opposite_color).nil?
       end
     end
     move
@@ -67,23 +67,25 @@ class CheckerPiece
 
   def perform_slide(location)
     @position = location
+    @board
   end
 
   def perform_jump(location)
     kill_piece_location = [(@position[0] + location[0])/2, (@position[1] + location[1])/2]
-    @board.white_pieces.delete_if{|piece| piece.position == kill_piece_location}
-    @board.black_pieces.delete_if{|piece| piece.position == kill_piece_location}
+    @board.white_pieces.delete_if{ |piece| piece.position == kill_piece_location }
+    @board.black_pieces.delete_if{ |piece| piece.position == kill_piece_location }  
     @position = location
+    @board
   end
 
   def perform_moves(location)
-    if jump_move.include?(location)
-      perform_jump(location)
-    elsif slide_move.include?(location)
-      perform_slide(location)
-    else
-      raise InvalidMoveError.new "Not a valid move"
-    end
+      if jump_move.include?(location)
+        perform_jump(location)
+      elsif slide_move.include?(location)
+        perform_slide(location)
+      else
+        raise InvalidMoveError.new "Not a valid move"
+      end
   end
 
 
@@ -102,10 +104,26 @@ class CheckerPiece
     @board.all_pieces.select{|piece| piece.position == location}.empty?
   end
 
-  def piece_at_location(location)
+  def piece_at_location(location, color)
     #make an all pieces array
-    @board.all_pieces.select{|piece| piece.position == location}[0]
+    if color == :white
+      @board.white_pieces.select{|piece| piece.position == location}[0]
+    elsif color == :black
+      @board.black_pieces.select{|piece| piece.position == location}[0]
+    end
+    []
   end
+
+  def opposite_color
+
+    if @color == :white
+      return :black
+    elsif @color == :black
+      return :white
+    end
+
+  end
+
 
   def check_if_king
     if @color == :white

@@ -12,7 +12,7 @@ class Board
 
   def initialize
 
-    #create_initial_positions
+    create_initial_positions
     @white_pieces = []
     @black_pieces = []
     create_initial_pieces
@@ -25,26 +25,26 @@ class Board
   end
 
 
-  # def create_initial_positions
-  #   (0..2).each do |x|
-  #     (0..7).each do |y|
-  #       if x + y < 10 && (x + y) % 2 == 1
-  #         WHITE_INITIAL_POSITIONS << [x,y]
-  #       end
-  #     end
-  #   end
+  def create_initial_positions
+    (0..2).each do |x|
+      (0..7).each do |y|
+        if x + y < 10 && (x + y) % 2 == 1
+          WHITE_INITIAL_POSITIONS << [x,y]
+        end
+      end
+    end
 
-  #   (5..7).each do |x|
-  #     (0..7).each do |y|
-  #       if (5..49) === (x + y) && (x + y) % 2 == 1
-  #         BLACK_INITIAL_POSITIONS << [x,y]
-  #       end
-  #     end
-  #   end
-  # end
+    (5..7).each do |x|
+      (0..7).each do |y|
+        if (5..49) === (x + y) && (x + y) % 2 == 1
+          BLACK_INITIAL_POSITIONS << [x,y]
+        end
+      end
+    end
+  end
 
-  WHITE_INITIAL_POSITIONS = [[3,4]]
-  BLACK_INITIAL_POSITIONS = [[4,3],[6,1]]
+  # WHITE_INITIAL_POSITIONS = [[3,4]]
+  # BLACK_INITIAL_POSITIONS = [[4,3],[6,1]]
 
 
   def create_initial_pieces
@@ -101,8 +101,23 @@ class Board
 
   end
 
-  def piece_at_location(location)
-    all_pieces.select{|piece| piece.position == location}[0]
+  def piece_at_location(location, color)
+    #make an all pieces array
+    if color == :white
+      white_pieces.select{|piece| piece.position == location}[0]
+    elsif color == :black
+      black_pieces.select{|piece| piece.position == location}[0]
+    end
+  end
+
+  def opposite_color
+
+    if @color == :white
+      return :black
+    elsif @color == :black
+      return :white
+    end
+
   end
 
   def all_positions
