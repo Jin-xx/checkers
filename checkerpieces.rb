@@ -15,6 +15,9 @@ class CheckerPiece
     b_slide = [[-1,-1],[-1,1]]
     k_slide = w_slide + b_slide
     move = []
+    #REV: Not sure that I see it, but why would self ever be nil? 
+    #REV: Also it looks like this method is ripe for decomposition, maybe you should make a
+    #REV: method that takes color as an argument? 
     if @king && !self.nil?
       k_slide.each do |slide|
         temp_move = [slide[0] + @position[0], slide[1] + @position[1]]
@@ -43,6 +46,7 @@ class CheckerPiece
     w_take = [[1,-1],[1,1]]
     b_take = [[-1,-1],[-1,1]]
     k_take = w_take + b_take
+    #REV: Also ripe for decomposition, similar to above
     if @king && !self.nil?
       k_jump.each_with_index do |jump, index|
         temp_move = [jump[0] + @position[0], jump[1] + @position[1]]
@@ -115,7 +119,7 @@ class CheckerPiece
   end
 
   def opposite_color
-
+    #REV: This could be turned into a one-line ternery if you felt like it 
     if @color == :white
       return :black
     elsif @color == :black
